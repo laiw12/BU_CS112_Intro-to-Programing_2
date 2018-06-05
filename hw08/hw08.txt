@@ -1,0 +1,67 @@
+/* File: HW08.java
+ * Author:Lai Wei
+ * Date: 3/28/15
+ * Purpose: This is my answer HW08, Problem A.
+ */
+
+1. (a) size: 11
+   (b) depth of node 31: 3
+   (c) height: 3
+   (d) length from 11 to 49:3
+   (e) all leaf nodes: 5 10 17 31 49
+
+2. (a)         11
+           /          \
+          6           19
+         /  \         / \
+        4   8        17  43
+         \  / \      /  / \
+         5 7   10   15 31 49
+                \   /\
+                12 13 16
+   
+(b) 1 to 3 and 18 to 10
+
+
+
+
+3. (a)
+
+                 31
+             /        \
+            6         43
+          /   \        \
+         4     8       49
+          \     \
+          5     10
+ 
+    (b)         19
+               /  \
+              6    31
+              /     \
+             5      43
+             /       \
+            4        49
+
+
+4. 
+                           
+(a) H = log(N+1)-1
+(b) N = 2^(H+1) -1
+
+5. 
+(a) 
+D C B A
+D B C A
+A C B D
+B C D A
+A D C B
+
+(b)
+
+E F B A C D G
+E B F D G A C
+D F B E G A C
+C B F E G A D
+C F B A D E G
+

@@ -1,0 +1,15 @@
+1. 
+leaf nodes : 4 15 25.
+
+First transformation
+
+    20
+   / \
+  15 25
+
+2.
+1) two comparisons to find the key 70
+2) four comparisons to find the key 160
+3) 3 comparisons to find key  40
+4) 50 is the minimum comparsion (1 comparison)
+5) 110 and 140 require the maximum number of comparisons (5 comparsions)

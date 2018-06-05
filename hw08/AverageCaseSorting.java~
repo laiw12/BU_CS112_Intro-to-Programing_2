@@ -1,0 +1,282 @@
+/* File: AverageCaseSorting.java
+ * Author: Wayne Snyder
+ * Date: 2/28/15
+ * Purpose: This is the Solution for Problem B.2 in HW 06 in CS 112, Spring 2015
+ */
+
+import java.util.Random;
+import java.awt.Color; 
+
+public class AverageCaseSorting {
+  
+     // swap A[i] and A[j]
+
+ private static void swap(int[] A, int i, int j) {
+      int temp = A[i];
+      A[i] = A[j];
+      A[j] = temp;
+   }
+
+// insertion sort from Algorithms, Sedgewick and Wayne, p.251
+   
+   private static void insertionSort(int[] A) {
+      int N = A.length;
+      for (int i = 1; i < N; i++) {
+         for (int j = i; j > 0 && less(A[j], A[j-1]); j--) {
+            swap(A, j, j-1);
+         }
+      }
+   } 
+   
+   
+   // insertion sort from Algorithms, Sedgewick and Wayne, p.249
+   
+   private static void selectionSort( int[] A) {
+      int N = A.length;
+      for (int i = 0; i < N; i++) {
+         int min = i;
+         for (int j = i+1; j < N; j++) {
+            if (less(A[j], A[min])) min = j;
+         }
+         swap(A, i, min);
+         
+      }
+      
+   }
+   
+   // Mergesort from Sedgewick
+
+   private static void mergeSort(int[] A) {
+      int[] aux = new int[A.length];
+      msHelper(A, aux, 0, A.length-1);
+      
+   }
+   
+   // stably merge A[lo .. mid] with A[mid+1 ..hi] using aux[lo .. hi]
+   private static void merge(int[] A, int[] aux, int lo, int mid, int hi) {
+      
+      
+      
+      // copy to aux[]
+      for (int k = lo; k <= hi; k++) {
+         aux[k] = A[k]; 
+      }
+      
+      // merge back to A[]
+      int i = lo, j = mid+1;
+      for (int k = lo; k <= hi; k++) {
+         if      (i > mid)              A[k] = aux[j++];   // this copying is unnecessary
+         else if (j > hi)               A[k] = aux[i++];
+         else if (less(aux[j], aux[i])) A[k] = aux[j++];
+         else                           A[k] = aux[i++];
+      }
+      
+      
+   }
+   
+   // mergesort A[lo..hi] using auxiliary array aux[lo..hi]
+   private static void msHelper(int[] A, int[] aux, int lo, int hi) {
+      if (hi <= lo) return;
+      int mid = lo + (hi - lo) / 2;
+      msHelper(A, aux, lo, mid);
+      msHelper(A, aux, mid + 1, hi);
+      merge(A, aux, lo, mid, hi);
+   }
+   
+   
+   // Quicksort from Sedgewick
+  
+  private static void quickSort(int[] A) {   
+    qsHelper(A, 0, A.length - 1);
+  }
+  
+  // quicksort the subarray from A[lo] to A[hi]
+  
+  private static void qsHelper(int[] A, int lo, int hi) { 
+    if (hi <= lo) return;
+    int j = partition(A, lo, hi);
+    qsHelper(A, lo, j-1);
+    qsHelper(A, j+1, hi);
+    
+  }
+  
+  // partition the subarray A[lo..hi] so that A[lo..j-1] <= A[j] <= A[j+1..hi]
+  // and return the index j.
+  private static int partition(int[] A, int lo, int hi) {
+    int i = lo+1;
+    int j = hi;
+    int v = A[lo];
+    while (i <= j) { 
+      while( i < A.length && less(A[i], v) )
+        ++i;
+      while( less(v, A[j]) )
+        --j;
+      if(i > j)
+        break;
+      else {
+        swap(A,i,j);
+        ++i;
+        --j;
+      }
+    } 
+    // put partitioning item v at A[j]
+    swap(A, lo, j);
+    
+    // now, A[lo .. j-1] <= A[j] <= A[j+1 .. hi]
+    return j;
+  }
+
+ // Create a worst-case array for merge sort by reversing a sorted list, doing opposite of merge sort
+ 
+ private static int [] unMergeSort( int SIZE ) {
+   int [] A = new int[SIZE]; 
+   for(int i = 0; i < SIZE; ++i)           // create sorted list
+     A[i] = i; 
+   int [] aux = new int[A.length];
+   unMergeSort(A,aux,0,A.length-1);
+   return A; 
+ }
+ 
+  private static  int counter = 0; 
+  
+
+  private static boolean less(int v, int w) {
+      ++counter;
+      return v < w; 
+   }
+  
+  private static Random R = new Random(); 
+  
+  private static int[] genRandomArray(int size) {
+    int[] B = new int[size];
+    for(int i = 0; i < size; ++i)
+      B[i] = R.nextInt(10000); 
+    return B; 
+  }
+  
+ 
+  private static   int runSelection(int N) {
+        counter = 0; 
+        selectionSort(genRandomArray(N));
+        return counter;
+    }
+  
+    private static   int runInsertion(int N) {
+        counter = 0; 
+        insertionSort(genRandomArray(N));
+        return counter;
+    }
+    
+      private static   int runMerge(int N) {
+        counter = 0; 
+        mergeSort(genRandomArray(N));
+        return counter;
+    }
+      
+        private static   int runQuick(int N) {
+        counter = 0; 
+        quickSort(genRandomArray(N));
+        return counter;
+    }
+  
+private static void unMergeSort(int A [], int [] aux, int lo, int hi) {
+  
+    if(hi <= lo)          // base case, size is <= 2
+      return;
+    
+    int mid = lo + (hi - lo)/2;    // m is rightmost element of left side
+    
+    distribute(A,aux, lo, mid, hi);
+    
+    unMergeSort(A,aux,lo,mid);
+    unMergeSort(A,aux,mid+1,hi); 
+ }
+
+private static void distribute(int A[], int aux[], int lo, int mid, int hi) {
+
+      for(int i = lo; i <= hi; ++i)     // copy A to auxiliary array
+         aux[i] = A[i]; 
+
+      for(int i = lo, j = lo; i <= mid; i++, j += 2)       // fill  A[lo...m] with aux[lo], aux[lo + 2], etc.
+          A[i] = aux[j];
+      
+      for(int i = mid+1, j = lo+1; i <= hi; i++, j += 2)      // fill A[m+1...hi] with aux[lo+1], aux[lo + 3], etc.
+          A[i] = aux[j];
+      
+    } 
+
+  private static void drawGraphs() {
+    int N = 100;
+    
+    double pointRadius = 0.005;
+    double lineRadius = 0.001;
+    
+    StdDraw.setXscale(0, N);
+    StdDraw.setYscale(0, 10*N);
+    StdDraw.setPenRadius(pointRadius);
+    StdDraw.setPenColor(Color.black);       // Google "Java Color"; the first link gives all the colors
+    StdDraw.line(0,0,0,10*N); 
+    StdDraw.line(0,0,N,0);
+    
+     double prevX, prevY;
+     
+    StdDraw.setPenColor(Color.blue);
+    prevX = 0; prevY = 0; 
+    for (int i = 1; i <= N; i++) {
+      int y = runInsertion(i); 
+      StdDraw.setPenRadius(pointRadius);
+      StdDraw.point(i, y);
+      StdDraw.setPenRadius(lineRadius);
+      StdDraw.line(prevX, prevY, i, y);
+      prevX = i; prevY = y;
+    }
+    
+
+    
+    StdDraw.setPenColor(Color.green);
+    prevX = 0; prevY = 0; 
+    for (int i = 1; i <= N; i++) {
+      int y = runMerge(i); 
+      StdDraw.setPenRadius(pointRadius);
+      StdDraw.point(i, y);
+      StdDraw.setPenRadius(lineRadius);
+      StdDraw.line(prevX, prevY, i, y);
+      prevX = i; prevY = y;
+    }
+    
+    StdDraw.setPenColor(Color.red);
+    prevX = 0; prevY = 0; 
+    for (int i = 1; i <= N; i++) {
+      int y = runQuick(i); 
+     for(int j = 0; j < 10; ++j)
+         y += runQuick(i);
+     y = y / 10; 
+      StdDraw.setPenRadius(pointRadius);
+      StdDraw.point(i, y);
+      StdDraw.setPenRadius(lineRadius);
+      StdDraw.line(prevX, prevY, i, y);
+      prevX = i; prevY = y;
+    }
+    
+        StdDraw.setPenColor(Color.black);
+    prevX = 0; prevY = 0; 
+    for (int i = 1; i <= N; ++i) {
+      int y = runSelection(i); 
+      StdDraw.setPenRadius(pointRadius);
+      StdDraw.point(i, y);
+      StdDraw.setPenRadius(lineRadius);
+      StdDraw.line(prevX, prevY, i, y);
+      prevX = i; prevY = y;
+    }
+  }
+  
+  public static void main(String[] args) {
+    
+    drawGraphs(); 
+    
+
+    
+    
+  }
+  
+}
