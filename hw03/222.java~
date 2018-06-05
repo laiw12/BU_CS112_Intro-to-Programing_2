@@ -1,0 +1,35 @@
+public int pop(){
+    
+      --next;
+      int n = S[next];
+        return n;
+  }
+ 
+  public boolean isEmpty(){
+    return S.length ==0;
+  }
+ 
+  public int size(){
+  return next;
+}
+  public String toString(){
+  
+ String a="";
+     for(int i=next-1;i>=0;--i){
+     a = a + String.valueOf(S[i]) + "\n";
+   }
+     
+     a = a + "___" + "\n";
+       return a;
+  }
+}
+   
+      
+        
+      
+  
+  
+  
+
+    
+  

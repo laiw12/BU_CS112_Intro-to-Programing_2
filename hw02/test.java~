@@ -1,0 +1,10 @@
+import java.util.Scanner;
+public class test{
+  public static void main(String[] args){
+    char[] test;
+    test = "3.141592".toCharArray();
+    
+    System.out.println( test);
+   
+  }}
+ 

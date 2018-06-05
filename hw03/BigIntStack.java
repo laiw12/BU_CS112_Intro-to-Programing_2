@@ -1,0 +1,41 @@
+/* File:BigIntStack.java
+ * Date: 2/15/14
+ * Author:  Lai Wei
+ * Class: CS 112, Spring 2015
+ * Purpose: This is my homework 3 problem B3
+ */
+
+
+public class BigIntStack{
+final int SIZE = 20; 
+  
+  private BigInt S[] = new BigInt[SIZE];                                      // change the type to BigInt
+  
+  private int next=0;
+
+
+  // push a BigInt on to the stack
+  public  void push(BigInt n){                                                  // change the input type to BigInt
+    S[next] = n;
+    ++next;
+  }
+  
+  // pop a BigInt off the stack
+  public BigInt pop(){
+    
+      --next;
+      BigInt n = S[next];
+        return n;
+  }
+
+// check if the BigInt stack is empty
+  public boolean isEmpty(){
+    return next ==0;
+  }
+  
+ // reutrn the size fo BigInt
+  public int size(){
+  return next;
+}
+}
+

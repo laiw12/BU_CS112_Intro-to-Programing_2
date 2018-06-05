@@ -1,0 +1,11 @@
+Problem A.1:
+ 
+For A1:  L2 L3 L4 L5 L6 L7 L8 are in the scope of A1.
+
+For A2:  L1 L2 L8
+
+For A3:  L3 L4 L5 L6 L7
+
+For A4: L5 L6
+
+For A5: L6

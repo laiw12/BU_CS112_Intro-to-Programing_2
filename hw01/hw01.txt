@@ -1,0 +1,19 @@
+/*
+ * File: hw01.txt
+ * Author:Lai Wei
+ * Date: January 28th, 2015
+ * Purpose: This is one part of the solution to HW01, problem A
+ */
+
+
+1. log2(64) = 6 , log2(1024) = 10
+
+2. True
+
+3. True
+
+4. True
+
+5. The second one (b). Because * operator can't be used on type string.
+
+6. n = 5, m = -2

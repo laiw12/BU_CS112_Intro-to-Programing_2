@@ -1,0 +1,53 @@
+Name :Lai Wei
+Email: laiw12@bu.edu
+Purpose: This is my homework 4 problem part A
+
+
+
+1. False
+
+2. True
+
+3. LIFO: stack  FIFO: queue
+
+4. enqueue() is to push()
+
+5. The stack looks like:
+ +   +
+ | 7 |
+ | 9 |
+ | 2 |
+ | 8 |
+ | 1 |
+ | 3 |
+ | 7 |
+ +---+ 
+
+6. The queue looks like:
+
+ | R | T | D | E |
+
+
+7. 2 & 3 & 4 could not be printed
+
+8. 4 could not be printed
+
+9. You changed queue Q. Q is revered. For example, if Q is 3 4 5, the first while loop put these
+   in a stack from top to bottom: 3 4 5. When number is poped off, the queue looks like 5 4 3.
+
+10. void swapTwo(Stack S){
+    if (S.isEmpty()){
+    }
+   int a= S.pop();
+      if (S.isEmpty()){
+        S.push(a);
+    }
+      else{
+        int b =S.pop();
+        int c =S.pop();
+        S.push(b);
+        S.push(c);
+    }
+ }
+      
+

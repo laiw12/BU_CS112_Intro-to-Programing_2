@@ -1,0 +1,22 @@
+/*
+ * File: hw02.txt
+ * Author:Lai Wei
+ * Date: January 31rd, 2015
+ * Purpose: homework one Part A
+ */
+
+1. The first p of Public should be in lowercase.
+   The last ")" should be "}".
+   It should be "main(String[] args)" not "[String[] argv] "
+   Hello world should be in double quotes not in singl because its string.
+   It's not System.println, it should be System.out.println.
+   The number of "{" at the beginning should mathch at the end.
+
+2. It will first prints out 3.0 and prints infinite of 10 . 
+
+3. It should be System.out.println(i) instead of  System.out.println('i=5')
+   There should be a ";" after 10.3
+   i should be intialized before if statement: int i =5;
+   There should be a boolean expression in if : if ( i==5);
+
+4. The programme should print out 1 2 4 8 (every time starts with a newline)
