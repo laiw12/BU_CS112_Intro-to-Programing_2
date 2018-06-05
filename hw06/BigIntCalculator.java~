@@ -1,0 +1,62 @@
+/* File: BigIntegerCalculator.java
+ * Date: 2/28/15
+ * Author:  Lai Wei
+ * Class: CS 112, Spring 2015
+ * Purpose: This is the  code for HW 06, Problem B.4
+ */
+
+import java.io.*;
+import java.util.*;
+
+public class BigIntCalculator {
+  private static void printMessage() {
+    System.out.println("Big Int Calculator:"); 
+    System.out.println("Enter an arithmetic expression with big integers, *, and +, with ");
+    System.out.println("all expressions fully parenthesized, and spaces between all tokens; ");
+    System.out.println("type Control-d to end."); 
+  }
+  
+  public static void main(String[] args) {
+    
+    Stack <String>  Ops = new Stack<String>();
+    Stack <Integer> Nums = new Stack<Integer>();
+    
+    System.out.println("This is the starter code for the Big Integer Calculator, ");
+    System.out.println("all it does is give you the input control structure; it");
+    System.out.println("simply reads each token and prints it out.");
+    
+    Scanner sc = new Scanner(System.in);
+    
+    while(sc.hasNext()) {
+      
+      String s = sc.nextLine();
+      String[] exp = s.split("\\s+");
+      for(int i =0; i <exp.length;++i){
+        if(exp[i].equals("(")){                                                                  // follow the step described in the question
+        
+        }
+        else if(exp[i].equals("*") || exp[i].equals("+")){
+          Ops.push(exp[i]);
+        }
+        else if (exp[i].equals(")")){
+          int A = Nums.pop();  
+          int B = Nums.pop();
+          String C = Ops.pop();
+          if(C.equals("*")){
+            Nums.push(A*B);
+          }
+          if(C.equals("+")){
+            Nums.push(A+B);
+          }
+        }
+        else{
+                        
+          Nums.push(Integer.valueOf(exp[i]));
+        }
+      }
+      System.out.println(Nums.pop()); 
+    }
+    System.out.println("Bye");
+    
+  }
+}

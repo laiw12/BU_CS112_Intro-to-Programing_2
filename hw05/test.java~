@@ -1,0 +1,29 @@
+public class test{
+  public static void insertion(int[] arr) {
+    for (int i = 1; i < arr.length; i++) {
+        for (int j = i; j > 0; j--) {
+          if (arr[j] < arr[j - 1]){
+           
+          
+                swap(arr, j, j - 1);
+                 for(int i=0;i <arr.length;++i)
+                  system.out.print(" " + arr[i]);
+                // show array here
+        }
+          system.out.print("\n");
+    }
+}
+  }
+   public static void main(String[] args) {
+     int [] a = new int[6];
+     a[0] = 4;
+     a[1] = 6;
+     a[2] = 9;
+     a[3] = 3;
+     a[4] = 1;
+     a[5] = 2;
+     insertion(a);
+   }
+}
+     
+     

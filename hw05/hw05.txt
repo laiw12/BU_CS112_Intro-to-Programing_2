@@ -1,0 +1,57 @@
+/* File: hw05.txt
+ * Classes: CS112
+ * Date: 2/19/15
+ * Class: Boston University CS 112, Spring 2015
+ * Author:Lai Wei
+ * Purpose: Homework 5 Problem Part A
+ */
+
+
+1. 
+
+The results are below:
+
+n = 9 m = 7 r = 7
+
+The queue looks like:
+
+| 1 | 2 | 3 | 5 |
+
+
+2.
+
+Nothing changes in the priority queue Q because the input will be automatically sorted.
+
+
+3. It will print out:
+
+ F
+ i
+ Folks
+ Hithere
+
+4.  after every swap, the array are like this:
+
+ 4 6 3 9 1 2
+ 4 3 6 9 1 2
+ 3 4 6 9 1 2
+ 3 4 6 1 9 2
+ 3 4 1 6 9 2
+ 3 1 4 6 9 2
+ 1 3 4 6 9 2
+ 1 3 4 6 2 9
+ 1 3 4 2 6 9
+ 1 3 2 4 6 9
+ 1 2 3 4 6 9
+
+5. after evert swap, the array are like this:
+
+ 1 6 4 2 3 9
+ 1 2 4 6 3 9
+ 1 2 3 6 4 9
+ 1 2 3 4 6 9
+ 1 2 3 4 6 9
+ 1 2 3 4 6 9
+
+
+

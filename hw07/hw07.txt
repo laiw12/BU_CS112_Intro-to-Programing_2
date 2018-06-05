@@ -1,0 +1,150 @@
+/* File: SymbolTable.java
+ * Author: Lai Wei
+ * Date: 3/22/15
+ * Purpose: This is my HW07 Problem A
+ */
+
+
+    1.
+
+int maximum(Node p) {
+
+
+if(p==null){
+
+return  Integer.MIN_VALUE;
+
+}
+
+else{
+
+return maximumHelper(p,p.item);
+}
+
+}
+
+// Helper function of maximumHelper which we can trace what is the current max value
+// during each recursion
+int maximumHelper(Node p, int max){
+if(p.next==null){
+return max;
+}
+
+if(max<p.next.item){
+
+return maximumHelper(p.next, p.next.item);
+}
+
+
+else{
+return maximumHelper(p.next,max);
+}
+}
+
+
+    2.
+
+int countOdd(Node p) {
+
+return countOddHelper(p,0);
+}
+
+
+// My helper function which we can set a counter as an input of the function.
+
+int countOddHelper(Node p, int count){
+
+if (p==null){
+return count;
+}
+
+if(p.item % 2 !=0){
+count = count +1;
+return countOddHelper(p.next,count);
+}
+
+else
+ return countOddHelper(p.next,count);
+}
+
+
+   3.
+
+weirdCount(Node p) { 
+if(p==null){
+return 0;
+}
+
+else 
+return 2*weirdCountHelper1(p,0)-weirdCountHelper2(p,0);
+
+} 
+
+// helper function to get the number of even numbers.
+int weirdCountHelper1(Node p, int M){
+if(p==null){
+return M;
+}
+if(p.item%2==0){
+M=M+1;
+return weirdCountHelper1(p.next,M);
+}
+
+else 
+return weirdCountHelper1(p.next,M);
+}
+
+// helper function to get the number of negetive numbers.
+int weirdCountHelper2(Node p, int N) 
+
+  if(p==null){
+return N;
+}
+if(p.item<0){
+M=M+1;
+return weirdCountHelper2(p.next,N);
+}
+
+else 
+return weirdCountHelper2(p.next,N);
+}
+
+  
+  
+  4.
+ Node addToEnd( int k, Node p) {
+    if( p == null ) {
+      p.next = null;    
+      p.item=k;
+      return p;          
+      
+    }
+    else {
+      p.next = addToEnd( k,p.next);
+      return p;
+    } 
+  }
+
+5.
+
+Node merge( Node p, Node q ) {
+        if ( p == null) 
+           return q;
+        else if ( q == null) 
+           return p;
+        else if (p.item < q.item) {
+           p.next = merge( p.next, q );
+           return p;
+        }
+        else {
+           q.next = merge( p, q.next );
+           return q;
+        }
+     }
+
+
+
+
+
+
+

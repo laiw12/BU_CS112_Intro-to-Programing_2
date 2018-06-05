@@ -1,0 +1,589 @@
+  /*
+2   * Copyright 2003-2006 Sun Microsystems, Inc.  All Rights Reserved.
+3   * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+4   *
+5   * This code is free software; you can redistribute it and/or modify it
+6   * under the terms of the GNU General Public License version 2 only, as
+7   * published by the Free Software Foundation.  Sun designates this
+8   * particular file as subject to the "Classpath" exception as provided
+9   * by Sun in the LICENSE file that accompanied this code.
+10  *
+11  * This code is distributed in the hope that it will be useful, but WITHOUT
+12  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+13  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+14  * version 2 for more details (a copy is included in the LICENSE file that
+15  * accompanied this code).
+16  *
+17  * You should have received a copy of the GNU General Public License version
+18  * 2 along with this work; if not, write to the Free Software Foundation,
+19  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+20  *
+21  * Please contact Sun Microsystems, Inc., 4150 Network Circle, Santa Clara,
+22  * CA 95054 USA or visit www.sun.com if you need additional information or
+23  * have any questions.
+24  */ 
+ package java.util;
+
+An unbounded priority queue based on a priority heap. The elements of the priority queue are ordered according to their natural ordering, or by a Comparator provided at queue construction time, depending on which constructor is used. A priority queue does not permit null elements. A priority queue relying on natural ordering also does not permit insertion of non-comparable objects (doing so may result in ClassCastException).
+The head of this queue is the least element with respect to the specified ordering. If multiple elements are tied for least value, the head is one of those elements -- ties are broken arbitrarily. The queue retrieval operations poll, remove, peek, and element access the element at the head of the queue.
+A priority queue is unbounded, but has an internal capacity governing the size of an array used to store the elements on the queue. It is always at least as large as the queue size. As elements are added to a priority queue, its capacity grows automatically. The details of the growth policy are not specified.
+This class and its iterator implement all of the optional methods of the Collection and Iterator interfaces. The Iterator provided in method iterator() is not guaranteed to traverse the elements of the priority queue in any particular order. If you need ordered traversal, consider using Arrays.sort(pq.toArray()).
+Note that this implementation is not synchronized. Multiple threads should not access a PriorityQueue instance concurrently if any of the threads modifies the queue. Instead, use the thread-safe java.util.concurrent.PriorityBlockingQueue class.
+Implementation note: this implementation provides O(log(n)) time for the enqueing and dequeing methods (offer, poll, remove() and add); linear time for the remove(Object) and contains(Object) methods; and constant time for the retrieval methods (peek, element, and size).
+This class is a member of the Java Collections Framework.
+Parameters:
+<E> the type of elements held in this collection
+Author(s):
+Josh Bloch, Doug Lea
+Since:
+1.5
+79 
+80 public class More ...PriorityQueue<E> extends AbstractQueue<E>
+81     implements java.io.Serializable {
+82 
+83     private static final long serialVersionUID = -7720805057305804111L;
+84 
+85     private static final int DEFAULT_INITIAL_CAPACITY = 11;
+
+    
+Priority queue represented as a balanced binary heap: the two children of queue[n] are queue[2*n+1] and queue[2*(n+1)]. The priority queue is ordered by comparator, or by the elements' natural ordering, if comparator is null: For each node n in the heap and each descendant d of n, n <= d. The element with the lowest value is in queue[0], assuming the queue is nonempty.
+94 
+95     private transient Object[] queue;
+
+    
+The number of elements in the priority queue.
+99 
+100    private int size = 0;
+
+    
+The comparator, or null if priority queue uses elements' natural ordering.
+105
+106    private final Comparator<? super E> comparator;
+
+    
+The number of times this priority queue has been structurally modified. See AbstractList for gory details.
+111
+112    private transient int modCount = 0;
+
+    
+Creates a PriorityQueue with the default initial capacity (11) that orders its elements according to their natural ordering.
+118
+119    public More ...PriorityQueue() {
+120        this(DEFAULT_INITIAL_CAPACITY, null);
+121    }
+
+    
+Creates a PriorityQueue with the specified initial capacity that orders its elements according to their natural ordering.
+Parameters:
+initialCapacity the initial capacity for this priority queue
+Throws:
+java.lang.IllegalArgumentException if initialCapacity is less than 1
+131
+132    public More ...PriorityQueue(int initialCapacity) {
+133        this(initialCapacity, null);
+134    }
+
+    
+Creates a PriorityQueue with the specified initial capacity that orders its elements according to the specified comparator.
+Parameters:
+initialCapacity the initial capacity for this priority queue
+comparator the comparator that will be used to order this priority queue. If null, the natural ordering of the elements will be used.
+Throws:
+java.lang.IllegalArgumentException if initialCapacity is less than 1
+146
+147    public More ...PriorityQueue(int initialCapacity,
+148                         Comparator<? super E> comparator) {
+149        // Note: This restriction of at least one is not actually needed,
+150        // but continues for 1.5 compatibility
+151        if (initialCapacity < 1)
+152            throw new IllegalArgumentException();
+153        this.queue = new Object[initialCapacity];
+154        this.comparator = comparator;
+155    }
+
+    
+Creates a PriorityQueue containing the elements in the specified collection. If the specified collection is an instance of a SortedSet or is another PriorityQueue, this priority queue will be ordered according to the same ordering. Otherwise, this priority queue will be ordered according to the natural ordering of its elements.
+Parameters:
+c the collection whose elements are to be placed into this priority queue
+Throws:
+java.lang.ClassCastException if elements of the specified collection cannot be compared to one another according to the priority queue's ordering
+java.lang.NullPointerException if the specified collection or any of its elements are null
+172
+173    public More ...PriorityQueue(Collection<? extends E> c) {
+174        initFromCollection(c);
+175        if (c instanceof SortedSet)
+176            comparator = (Comparator<? super E>)
+177                ((SortedSet<? extends E>)c).comparator();
+178        else if (c instanceof PriorityQueue)
+179            comparator = (Comparator<? super E>)
+180                ((PriorityQueue<? extends E>)c).comparator();
+181        else {
+182            comparator = null;
+183            heapify();
+184        }
+185    }
+
+    
+Creates a PriorityQueue containing the elements in the specified priority queue. This priority queue will be ordered according to the same ordering as the given priority queue.
+Parameters:
+c the priority queue whose elements are to be placed into this priority queue
+Throws:
+java.lang.ClassCastException if elements of c cannot be compared to one another according to c's ordering
+java.lang.NullPointerException if the specified priority queue or any of its elements are null
+200
+201    public More ...PriorityQueue(PriorityQueue<? extends E> c) {
+202        comparator = (Comparator<? super E>)c.comparator();
+203        initFromCollection(c);
+204    }
+
+    
+Creates a PriorityQueue containing the elements in the specified sorted set. This priority queue will be ordered according to the same ordering as the given sorted set.
+Parameters:
+c the sorted set whose elements are to be placed into this priority queue
+Throws:
+java.lang.ClassCastException if elements of the specified sorted set cannot be compared to one another according to the sorted set's ordering
+java.lang.NullPointerException if the specified sorted set or any of its elements are null
+218
+219    public More ...PriorityQueue(SortedSet<? extends E> c) {
+220        comparator = (Comparator<? super E>)c.comparator();
+221        initFromCollection(c);
+222    }
+
+    
+Initializes queue array with elements from the given Collection.
+Parameters:
+c the collection
+228
+229    private void More ...initFromCollection(Collection<? extends E> c) {
+230        Object[] a = c.toArray();
+231        // If c.toArray incorrectly doesn't return Object[], copy it.
+232        if (a.getClass() != Object[].class)
+233            a = Arrays.copyOf(a, a.length, Object[].class);
+234        queue = a;
+235        size = a.length;
+236    }
+
+    
+Increases the capacity of the array.
+Parameters:
+minCapacity the desired minimum capacity
+242
+243    private void More ...grow(int minCapacity) {
+244        if (minCapacity < 0) // overflow
+245            throw new OutOfMemoryError();
+246        int oldCapacity = queue.length;
+247        // Double size if small; else grow by 50%
+248        int newCapacity = ((oldCapacity < 64)?
+249                           ((oldCapacity + 1) * 2):
+250                           ((oldCapacity / 2) * 3));
+251        if (newCapacity < 0) // overflow
+252            newCapacity = Integer.MAX_VALUE;
+253        if (newCapacity < minCapacity)
+254            newCapacity = minCapacity;
+255        queue = Arrays.copyOf(queue, newCapacity);
+256    }
+
+    
+Inserts the specified element into this priority queue.
+Returns:
+true (as specified by Collection.add(java.lang.Object))
+Throws:
+java.lang.ClassCastException if the specified element cannot be compared with elements currently in this priority queue according to the priority queue's ordering
+java.lang.NullPointerException if the specified element is null
+266
+267    public boolean More ...add(E e) {
+268        return offer(e);
+269    }
+
+    
+Inserts the specified element into this priority queue.
+Returns:
+true (as specified by Queue.offer(java.lang.Object))
+Throws:
+java.lang.ClassCastException if the specified element cannot be compared with elements currently in this priority queue according to the priority queue's ordering
+java.lang.NullPointerException if the specified element is null
+279
+280    public boolean More ...offer(E e) {
+281        if (e == null)
+282            throw new NullPointerException();
+283        modCount++;
+284        int i = size;
+285        if (i >= queue.length)
+286            grow(i + 1);
+287        size = i + 1;
+288        if (i == 0)
+289            queue[0] = e;
+290        else
+291            siftUp(i, e);
+292        return true;
+293    }
+294
+295    public E More ...peek() {
+296        if (size == 0)
+297            return null;
+298        return (E) queue[0];
+299    }
+300
+301    private int More ...indexOf(Object o) {
+302        if (o != null) {
+303            for (int i = 0; i < size; i++)
+304                if (o.equals(queue[i]))
+305                    return i;
+306        }
+307        return -1;
+308    }
+
+    
+Removes a single instance of the specified element from this queue, if it is present. More formally, removes an element e such that o.equals(e), if this queue contains one or more such elements. Returns true if and only if this queue contained the specified element (or equivalently, if this queue changed as a result of the call).
+Parameters:
+o element to be removed from this queue, if present
+Returns:
+true if this queue changed as a result of the call
+320
+321    public boolean More ...remove(Object o) {
+322        int i = indexOf(o);
+323        if (i == -1)
+324            return false;
+325        else {
+326            removeAt(i);
+327            return true;
+328        }
+329    }
+
+    
+Version of remove using reference equality, not equals. Needed by iterator.remove.
+Parameters:
+o element to be removed from this queue, if present
+Returns:
+true if removed
+337
+338    boolean More ...removeEq(Object o) {
+339        for (int i = 0; i < size; i++) {
+340            if (o == queue[i]) {
+341                removeAt(i);
+342                return true;
+343            }
+344        }
+345        return false;
+346    }
+
+    
+Returns true if this queue contains the specified element. More formally, returns true if and only if this queue contains at least one element e such that o.equals(e).
+Parameters:
+o object to be checked for containment in this queue
+Returns:
+true if this queue contains the specified element
+355
+356    public boolean More ...contains(Object o) {
+357        return indexOf(o) != -1;
+358    }
+
+    
+Returns an array containing all of the elements in this queue. The elements are in no particular order.
+The returned array will be "safe" in that no references to it are maintained by this queue. (In other words, this method must allocate a new array). The caller is thus free to modify the returned array.
+This method acts as bridge between array-based and collection-based APIs.
+Returns:
+an array containing all of the elements in this queue
+372
+373    public Object[] More ...toArray() {
+374        return Arrays.copyOf(queue, size);
+375    }
+
+    
+Returns an array containing all of the elements in this queue; the runtime type of the returned array is that of the specified array. The returned array elements are in no particular order. If the queue fits in the specified array, it is returned therein. Otherwise, a new array is allocated with the runtime type of the specified array and the size of this queue.
+If the queue fits in the specified array with room to spare (i.e., the array has more elements than the queue), the element in the array immediately following the end of the collection is set to null.
+Like the toArray() method, this method acts as bridge between array-based and collection-based APIs. Further, this method allows precise control over the runtime type of the output array, and may, under certain circumstances, be used to save allocation costs.
+Suppose x is a queue known to contain only strings. The following code can be used to dump the queue into a newly allocated array of String:
+     String[] y = x.toArray(new String[0]);
+Note that toArray(new Object[0]) is identical in function to toArray().
+Parameters:
+a the array into which the elements of the queue are to be stored, if it is big enough; otherwise, a new array of the same runtime type is allocated for this purpose.
+Returns:
+an array containing all of the elements in this queue
+Throws:
+java.lang.ArrayStoreException if the runtime type of the specified array is not a supertype of the runtime type of every element in this queue
+java.lang.NullPointerException if the specified array is null
+413
+414    public <T> T[] More ...toArray(T[] a) {
+415        if (a.length < size)
+416            // Make a new array of a's runtime type, but my contents:
+417            return (T[]) Arrays.copyOf(queue, size, a.getClass());
+418        System.arraycopy(queue, 0, a, 0, size);
+419        if (a.length > size)
+420            a[size] = null;
+421        return a;
+422    }
+
+    
+Returns an iterator over the elements in this queue. The iterator does not return the elements in any particular order.
+Returns:
+an iterator over the elements in this queue
+429
+430    public Iterator<E> More ...iterator() {
+431        return new Itr();
+432    }
+433
+434    private final class More ...Itr implements Iterator<E> {
+        
+Index (into queue array) of element to be returned by subsequent call to next.
+438
+439        private int cursor = 0;
+
+        
+Index of element returned by most recent call to next, unless that element came from the forgetMeNot list. Set to -1 if element is deleted by a call to remove.
+445
+446        private int lastRet = -1;
+
+        
+A queue of elements that were moved from the unvisited portion of the heap into the visited portion as a result of "unlucky" element removals during the iteration. (Unlucky element removals are those that require a siftup instead of a siftdown.) We must visit all of the elements in this list to complete the iteration. We do this after we've completed the "normal" iteration. We expect that most iterations, even those involving removals, will not need to store elements in this field.
+458
+459        private ArrayDeque<E> forgetMeNot = null;
+
+        
+Element returned by the most recent call to next iff that element was drawn from the forgetMeNot list.
+464
+465        private E lastRetElt = null;
+
+        
+The modCount value that the iterator believes that the backing Queue should have. If this expectation is violated, the iterator has detected concurrent modification.
+471
+472        private int expectedModCount = modCount;
+473
+474        public boolean More ...hasNext() {
+475            return cursor < size ||
+476                (forgetMeNot != null && !forgetMeNot.isEmpty());
+477        }
+478
+479        public E More ...next() {
+480            if (expectedModCount != modCount)
+481                throw new ConcurrentModificationException();
+482            if (cursor < size)
+483                return (E) queue[lastRet = cursor++];
+484            if (forgetMeNot != null) {
+485                lastRet = -1;
+486                lastRetElt = forgetMeNot.poll();
+487                if (lastRetElt != null)
+488                    return lastRetElt;
+489            }
+490            throw new NoSuchElementException();
+491        }
+492
+493        public void More ...remove() {
+494            if (expectedModCount != modCount)
+495                throw new ConcurrentModificationException();
+496            if (lastRet != -1) {
+497                E moved = PriorityQueue.this.removeAt(lastRet);
+498                lastRet = -1;
+499                if (moved == null)
+500                    cursor--;
+501                else {
+502                    if (forgetMeNot == null)
+503                        forgetMeNot = new ArrayDeque<E>();
+504                    forgetMeNot.add(moved);
+505                }
+506            } else if (lastRetElt != null) {
+507                PriorityQueue.this.removeEq(lastRetElt);
+508                lastRetElt = null;
+509            } else {
+510                throw new IllegalStateException();
+511            }
+512            expectedModCount = modCount;
+513        }
+514    }
+515
+516    public int More ...size() {
+517        return size;
+518    }
+
+    
+Removes all of the elements from this priority queue. The queue will be empty after this call returns.
+523
+524    public void More ...clear() {
+525        modCount++;
+526        for (int i = 0; i < size; i++)
+527            queue[i] = null;
+528        size = 0;
+529    }
+530
+531    public E More ...poll() {
+532        if (size == 0)
+533            return null;
+534        int s = --size;
+535        modCount++;
+536        E result = (E) queue[0];
+537        E x = (E) queue[s];
+538        queue[s] = null;
+539        if (s != 0)
+540            siftDown(0, x);
+541        return result;
+542    }
+
+    
+Removes the ith element from queue. Normally this method leaves the elements at up to i-1, inclusive, untouched. Under these circumstances, it returns null. Occasionally, in order to maintain the heap invariant, it must swap a later element of the list with one earlier than i. Under these circumstances, this method returns the element that was previously at the end of the list and is now at some position before i. This fact is used by iterator.remove so as to avoid missing traversing elements.
+555
+556    private E More ...removeAt(int i) {
+557        assert i >= 0 && i < size;
+558        modCount++;
+559        int s = --size;
+560        if (s == i) // removed last element
+561            queue[i] = null;
+562        else {
+563            E moved = (E) queue[s];
+564            queue[s] = null;
+565            siftDown(i, moved);
+566            if (queue[i] == moved) {
+567                siftUp(i, moved);
+568                if (queue[i] != moved)
+569                    return moved;
+570            }
+571        }
+572        return null;
+573    }
+
+    
+Inserts item x at position k, maintaining heap invariant by promoting x up the tree until it is greater than or equal to its parent, or is the root. To simplify and speed up coercions and comparisons. the Comparable and Comparator versions are separated into different methods that are otherwise identical. (Similarly for siftDown.)
+Parameters:
+k the position to fill
+x the item to insert
+586
+587    private void More ...siftUp(int k, E x) {
+588        if (comparator != null)
+589            siftUpUsingComparator(k, x);
+590        else
+591            siftUpComparable(k, x);
+592    }
+593
+594    private void More ...siftUpComparable(int k, E x) {
+595        Comparable<? super E> key = (Comparable<? super E>) x;
+596        while (k > 0) {
+597            int parent = (k - 1) >>> 1;
+598            Object e = queue[parent];
+599            if (key.compareTo((E) e) >= 0)
+600                break;
+601            queue[k] = e;
+602            k = parent;
+603        }
+604        queue[k] = key;
+605    }
+606
+607    private void More ...siftUpUsingComparator(int k, E x) {
+608        while (k > 0) {
+609            int parent = (k - 1) >>> 1;
+610            Object e = queue[parent];
+611            if (comparator.compare(x, (E) e) >= 0)
+612                break;
+613            queue[k] = e;
+614            k = parent;
+615        }
+616        queue[k] = x;
+617    }
+
+    
+Inserts item x at position k, maintaining heap invariant by demoting x down the tree repeatedly until it is less than or equal to its children or is a leaf.
+Parameters:
+k the position to fill
+x the item to insert
+626
+627    private void More ...siftDown(int k, E x) {
+628        if (comparator != null)
+629            siftDownUsingComparator(k, x);
+630        else
+631            siftDownComparable(k, x);
+632    }
+633
+634    private void More ...siftDownComparable(int k, E x) {
+635        Comparable<? super E> key = (Comparable<? super E>)x;
+636        int half = size >>> 1;        // loop while a non-leaf
+637        while (k < half) {
+638            int child = (k << 1) + 1; // assume left child is least
+639            Object c = queue[child];
+640            int right = child + 1;
+641            if (right < size &&
+642                ((Comparable<? super E>) c).compareTo((E) queue[right]) > 0)
+643                c = queue[child = right];
+644            if (key.compareTo((E) c) <= 0)
+645                break;
+646            queue[k] = c;
+647            k = child;
+648        }
+649        queue[k] = key;
+650    }
+651
+652    private void More ...siftDownUsingComparator(int k, E x) {
+653        int half = size >>> 1;
+654        while (k < half) {
+655            int child = (k << 1) + 1;
+656            Object c = queue[child];
+657            int right = child + 1;
+658            if (right < size &&
+659                comparator.compare((E) c, (E) queue[right]) > 0)
+660                c = queue[child = right];
+661            if (comparator.compare(x, (E) c) <= 0)
+662                break;
+663            queue[k] = c;
+664            k = child;
+665        }
+666        queue[k] = x;
+667    }
+
+    
+Establishes the heap invariant (described above) in the entire tree, assuming nothing about the order of the elements prior to the call.
+672
+673    private void More ...heapify() {
+674        for (int i = (size >>> 1) - 1; i >= 0; i--)
+675            siftDown(i, (E) queue[i]);
+676    }
+
+    
+Returns the comparator used to order the elements in this queue, or null if this queue is sorted according to the natural ordering of its elements.
+Returns:
+the comparator used to order this queue, or null if this queue is sorted according to the natural ordering of its elements
+686
+687    public Comparator<? super E> More ...comparator() {
+688        return comparator;
+689    }
+
+    
+Saves the state of the instance to a stream (that is, serializes it).
+Parameters:
+s the stream
+SerialData:
+The length of the array backing the instance is emitted (int), followed by all of its elements (each an Object) in the proper order.
+699
+700    private void More ...writeObject(java.io.ObjectOutputStream s)
+701        throws java.io.IOException{
+702        // Write out element count, and any hidden stuff
+703        s.defaultWriteObject();
+704
+705        // Write out array length, for compatibility with 1.5 version
+706        s.writeInt(Math.max(2, size + 1));
+707
+708        // Write out all elements in the "proper order".
+709        for (int i = 0; i < size; i++)
+710            s.writeObject(queue[i]);
+711    }
+
+    
+Reconstitutes the PriorityQueue instance from a stream (that is, deserializes it).
+Parameters:
+s the stream
+718
+719    private void More ...readObject(java.io.ObjectInputStream s)
+720        throws java.io.IOException, ClassNotFoundException {
+721        // Read in size, and any hidden stuff
+722        s.defaultReadObject();
+723
+724        // Read in (and discard) array length
+725        s.readInt();
+726
+727        queue = new Object[size];
+728
+729        // Read in all elements.
+730        for (int i = 0; i < size; i++)
+731            queue[i] = s.readObject();
+732
+733        // Elements are guaranteed to be in "proper order", but the
+734        // spec has never explained what that might be.
+735        heapify();
+736    }
+737

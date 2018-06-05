@@ -1,0 +1,281 @@
+/* File: IntDequeue.java
+ * Classes: CS112
+ * Date: 2/19/15
+ * Class: Boston University CS 112, Spring 2015
+ * Author:Lai Wei
+ * Purpose: Homework 5 Problem Part B 2.
+ */
+
+
+
+
+
+
+public class IntDequeue{
+  private int[] A = new int[10];
+  private int next = 0;
+  private int size = 0;
+  private int front = 0;
+  private int nextfront = 0;
+  
+  // helper method, returns the next available slot.
+  public  int nextslot(int k){
+    return (( k + 1) % A.length);
+  }
+  
+  //by analogy with nextSlot(....) but returns the previous slot.
+  public int  previousSlot(int k){
+    if (k -1 < 0){
+      return A.length-1;
+    }
+    else{
+      return k -1;
+    }
+  }
+  
+  // put int k at the front of the queue
+  public void enqueueRear(int k){
+    if(size==A.length){
+      resize();
+    }
+    A[next] = k;
+    next = nextslot(next);
+    ++ size;
+  }
+  
+  // dequeue the int at the rear of the queue and ruturn it.
+  public int dequeueRear() {
+    if(isEmpty()){
+      return Integer.MIN_VALUE;
+    }
+    int temp =A[ previousSlot(next)];
+    next =  previousSlot(next);
+    -- size;
+    return temp;
+  }
+  
+  // put int k at the front of the queue.
+  public void enqueueFront(int k){
+    if (size==A.length){
+      resize();
+    }
+    
+    A[ previousSlot(front)] = k;
+    front =  previousSlot(front);
+    ++size;
+  }
+  
+  // dequeue the int at the front of the queue and ruturn it.
+  public int dequeueFront(){
+    if(isEmpty()){
+      return Integer.MIN_VALUE;
+    }
+    int temp =A[front];
+    front = nextslot(front);
+    -- size;
+    return temp;
+  }
+  
+// create a new array that is twice as big as A and move all the 
+// elemnts from the previous to the new array from index zero.
+  private void resize() {
+    int a = size;
+    int [] B = new int[2*A.length];
+    for(int i =0; i < a;++i){
+      B[i] = dequeueFront();
+    }
+    A = B;
+    size =a;
+    front =0;
+    next = size;
+  }
+  
+  // returns the size of the array 
+  public int size(){
+    return size;
+  }
+  
+  // check if A is empty.
+  public boolean isEmpty() {
+    return (size == 0); 
+  }
+  
+  // prints out the array as well as the length, size, next and front.
+  public String toString() {
+    
+    String s = "[";
+    for(int i = 0; i < A.length; ++i) {
+      if(i == 0)
+        s += A[i];
+      else 
+        s += ", " + A[i];
+    }
+    s += "]"; 
+    return s + "  length: " + A.length +"  size: " +size + "  front: "+front + "  next: " +next;
+  }
+  
+  public static void main(String[] args) {
+    
+    IntDequeue D = new IntDequeue(); 
+    
+    System.out.println("\n[1] First test toString on empty dequeue... Should print out:"); 
+    System.out.println("[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  length: 10  size: 0  front: 0  next: 0"); 
+    System.out.println(D); 
+    
+    System.out.println("\n[2] Test size and isEmpty... Should print out:\n0  true"); 
+    System.out.println(D.size() + "  " + D.isEmpty()); 
+    
+    System.out.println("\n[3] Test enqueueRear.... Should print out:"
+                         + "\n[1, 2, 3, 4, 0, 0, 0, 0, 0, 0]  length: 10  size: 4  front: 0  next: 4");
+    D.enqueueRear(1); 
+    D.enqueueRear(2);
+    D.enqueueRear(3); 
+    D.enqueueRear(4);
+    
+    System.out.println(D); 
+    
+    System.out.println("\n[4] Test size and isEmpty again... Should print out:\n4  false"); 
+    System.out.println(D.size() + "  " + D.isEmpty()); 
+    
+    System.out.println("\n[5] Test dequeueFront.... Should print out:"
+                         + "\nn = 1  m = 3");
+    int n = D.dequeueFront(); 
+    D.dequeueFront();  
+    int m = D.dequeueFront(); 
+    System.out.println("n = " + n + "  m = " + m); 
+    
+    System.out.println("\n[6] And should print out:"
+                         + "\n[1, 2, 3, 4, 0, 0, 0, 0, 0, 0]  length: 10  size: 1  front: 3  next: 4");
+    System.out.println(D); 
+    
+    
+    System.out.println("\n[7] Test wrap-around of enqueueRear .... Should print out:"
+                         + "\n[11, 12, 13, 4, 5, 6, 7, 8, 9, 10]  length: 10  size: 10  front: 3  next: 3");
+    
+    for(int i = 5; i < 14; ++i)
+      D.enqueueRear(i);
+    
+    System.out.println(D); 
+    
+    System.out.println("\n[8] Test wrap-around of dequeueFront .... Should print out:"
+                         + "\n[11, 12, 13, 4, 5, 6, 7, 8, 9, 10]  length: 10  size: 0  front: 3  next: 3  m = 13");
+    
+    for(int i = 0; i < 9; ++i)
+      D.dequeueFront();
+    m = D.dequeueFront(); 
+    
+    System.out.println(D + "  m = " + m); 
+    
+    // You may insert some tests for previousSlot(...) here if you wish
+    
+    System.out.println("\n[9] Test enqueueFront.... Should print out:"
+                         + "\n[3, 2, 1, 4, 5, 6, 7, 8, 9, 4]  length: 10  size: 4  front: 9  next: 3");
+    D.enqueueFront(1); 
+    D.enqueueFront(2);
+    D.enqueueFront(3); 
+    D.enqueueFront(4);
+    
+    System.out.println(D); 
+    
+    
+    
+    System.out.println("\n[10] Test size and isEmpty again... Should print out:\n4  false"); 
+    System.out.println(D.size() + "  " + D.isEmpty()); 
+    
+    System.out.println("\n[11] Test dequeueRear... Should print out:"
+                         + "\nn = 1  m = 3");
+    n = D.dequeueRear(); 
+    D.dequeueRear();  
+    m = D.dequeueRear(); 
+    D.dequeueRear(); 
+    System.out.println("n = " + n + "  m = " + m); 
+    
+    System.out.println("\n[12] And should print out:"
+                         + "\n[3, 2, 1, 4, 5, 6, 7, 8, 9, 4]  length: 10  size: 1  front: 9  next: 0");
+    System.out.println(D); 
+    
+    D.enqueueRear(0);        // front was accidentally at end of array, move it to test wrap-around
+    D.dequeueFront(); 
+    D.enqueueRear(0);        
+    D.dequeueFront(); 
+    D.enqueueRear(0);       
+    D.dequeueFront(); 
+    
+    System.out.println("\n[13] Test wrap-around of enqueueFront .... Should print out:"
+                         + "\n[101, 100, 1, 4, 5, 6, 105, 104, 103, 102]  length: 10  size: 6  front: 6  next: 2");
+    
+    for(int i = 100; i <= 105; ++i)
+      D.enqueueFront(i);
+    
+    System.out.println(D); 
+    
+    System.out.println("\n[14] Test wrap-around of dequeueRear .... Should print out:"
+                         + "\n[101, 100, 1, 4, 5, 6, 105, 104, 103, 102]  length: 10  size: 1  front: 6  next: 7  m = 104");
+    
+    for(int i = 0; i < 4; ++i)
+      D.dequeueRear();
+    m = D.dequeueRear(); 
+    
+    System.out.println(D + "  m = " + m);
+    
+    while(!D.isEmpty())
+      D.dequeueRear(); 
+    
+    System.out.println("\n[15] Now test all four together.... Should print out:\n1 2 3 4 5 6");      
+    D.enqueueRear(6); 
+    D.enqueueFront(4);
+    D.enqueueRear(1);
+    D.enqueueFront(2);
+    System.out.print(D.dequeueRear() + " "); 
+    System.out.print(D.dequeueFront() + " "); 
+    D.enqueueRear(5);
+    D.enqueueFront(3);
+    System.out.print(D.dequeueFront() + " "); 
+    System.out.print(D.dequeueFront() + " "); 
+    System.out.print(D.dequeueRear() + " "); 
+    System.out.println(D.dequeueFront() + " ");
+    
+    System.out.println("\n[16] All four.... Should print out:\n[101, 100, 1, 4, 3, 4, 6, 5, 103, 102]  length: 10  size: 0  front: 7  next: 7"); 
+    System.out.println(D); 
+    
+    System.out.println("\n[17] Test resizing.... Should print out:"
+                         + "\n[6, 5, 4, 3, 2, 1, 8, 9, 10, 11, 12, 13, 14, 0, 0, 0, 0, 0, 0, 0]  length: 20  size: 13  front: 0  next: 13"); 
+    
+    for(int i = 1; i < 7; ++i)
+      D.enqueueFront(i);
+    for(int i = 8; i < 15; ++i)
+      D.enqueueRear(i);
+    
+    System.out.println(D); 
+    
+    System.out.println("\n[18] Make sure methods still work after resizing.... "
+                         + "Should print out:\n[6, 5, 4, 3, 2, 1, 8, 9, 10, 11, 12, 13, 333, 444, 0, 0, 0, 0, 222, 111]  length: 20  size: 15  front: 19  next: 14"); 
+    D.enqueueFront(111);
+    D.enqueueFront(222);
+    n = D.dequeueRear();
+    D.enqueueRear(333);
+    D.enqueueRear(444);
+    m = D.dequeueFront(); 
+    
+    System.out.print(D);
+    
+    System.out.println("\n\n[19] And should print out:\nn = 14  m = 222");
+    System.out.println("n = " + n + "  m = " + m); 
+    
+    
+    System.out.println("\n[20] Testing error values for dequeue methods.. Should print out:\nn = -2147483648  m = -2147483648");
+    while(!D.isEmpty())
+      D.dequeueFront(); 
+    
+    n = D.dequeueFront(); 
+    m = D.dequeueRear(); 
+    System.out.println("n = " + n + "  m = " + m);       
+    
+    
+  } 
+  
+}
+
+
+
+
